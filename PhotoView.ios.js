@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-<<<<<<< HEAD
-=======
 import PropTypes from 'prop-types';
->>>>>>> beaecb427a3aa0dda9bd267b94b416ae4d3c056f
 import { requireNativeComponent, View } from 'react-native';
 import ViewPropTypes from 'react-native/Libraries/Components/View/ViewPropTypes';
 import PropTypes from "prop-types";
