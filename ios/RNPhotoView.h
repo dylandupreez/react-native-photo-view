@@ -18,12 +18,14 @@
 
 #pragma mark - Block
 
+@property (nonatomic, copy) RCTDirectEventBlock onPhotoViewerError;
 @property (nonatomic, copy) RCTDirectEventBlock onPhotoViewerScale;
 @property (nonatomic, copy) RCTBubblingEventBlock onPhotoViewerViewTap;
 @property (nonatomic, copy) RCTBubblingEventBlock onPhotoViewerTap;
 @property (nonatomic, copy) RCTDirectEventBlock onPhotoViewerLoadStart;
 @property (nonatomic, copy) RCTDirectEventBlock onPhotoViewerLoad;
 @property (nonatomic, copy) RCTDirectEventBlock onPhotoViewerLoadEnd;
+@property (nonatomic, copy) RCTDirectEventBlock onPhotoViewerProgress;
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 

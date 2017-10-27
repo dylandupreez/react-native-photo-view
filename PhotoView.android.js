@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import React, {Component} from 'react';
 import {requireNativeComponent, View} from 'react-native';
+=======
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { requireNativeComponent, View } from 'react-native';
+>>>>>>> beaecb427a3aa0dda9bd267b94b416ae4d3c056f
 import ViewPropTypes from 'react-native/Libraries/Components/View/ViewPropTypes';
 import PropTypes from "prop-types";
 
@@ -28,6 +34,7 @@ export default class PhotoView extends Component {
         androidZoomTransitionDuration: PropTypes.number,
         androidScaleType: PropTypes.oneOf(["center", "centerCrop", "centerInside", "fitCenter", "fitStart", "fitEnd", "fitXY", "matrix"]),
         onLoadStart: PropTypes.func,
+        onError: PropTypes.func,
         onLoad: PropTypes.func,
         onLoadEnd: PropTypes.func,
         onTap: PropTypes.func,
@@ -49,9 +56,10 @@ export default class PhotoView extends Component {
         }
 
         if (source && source.uri) {
-            var {onLoadStart, onLoad, onLoadEnd, onTap, onViewTap, onScale, ...props} = this.props;
+            var {onLoadStart, onLoad, onLoadEnd, onTap, onViewTap, onScale, onError, ...props} = this.props;
 
             var nativeProps = {
+                onPhotoViewerError: onError,
                 onPhotoViewerLoadStart: onLoadStart,
                 onPhotoViewerLoad: onLoad,
                 onPhotoViewerLoadEnd: onLoadEnd,
@@ -72,6 +80,7 @@ export default class PhotoView extends Component {
 
 var cfg = {
     nativeOnly: {
+        onPhotoViewerError: true,
         onPhotoViewerLoadStart: true,
         onPhotoViewerLoad: true,
         onPhotoViewerLoadEnd: true,
@@ -83,4 +92,5 @@ var cfg = {
         loadingIndicatorSrc: true
     }
 };
+
 const PhotoViewAndroid = requireNativeComponent('PhotoViewAndroid', PhotoView, cfg);

@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+<<<<<<< HEAD
+=======
+import PropTypes from 'prop-types';
+>>>>>>> beaecb427a3aa0dda9bd267b94b416ae4d3c056f
 import { requireNativeComponent, View } from 'react-native';
 import ViewPropTypes from 'react-native/Libraries/Components/View/ViewPropTypes';
 import PropTypes from "prop-types";
@@ -28,6 +32,7 @@ export default class PhotoView extends Component {
         onLoadStart: PropTypes.func,
         onLoad: PropTypes.func,
         onLoadEnd: PropTypes.func,
+        onProgress: PropTypes.func,
         onTap: PropTypes.func,
         onViewTap: PropTypes.func,
         onScale: PropTypes.func,
@@ -49,12 +54,14 @@ export default class PhotoView extends Component {
         }
 
         if (source && source.uri) {
-            var {onLoadStart, onLoad, onLoadEnd, onTap, onViewTap, onScale, ...props} = this.props;
+            var {onLoadStart, onLoad, onLoadEnd, onProgress, onTap, onViewTap, onScale, onError, ...props} = this.props;
 
             var nativeProps = {
+                onPhotoViewerError: onError,
                 onPhotoViewerLoadStart: onLoadStart,
                 onPhotoViewerLoad: onLoad,
                 onPhotoViewerLoadEnd: onLoadEnd,
+                onPhotoViewerProgress: onProgress,
                 onPhotoViewerTap: onTap,
                 onPhotoViewerViewTap: onViewTap,
                 onPhotoViewerScale: onScale,
@@ -71,9 +78,11 @@ export default class PhotoView extends Component {
 
 var cfg = {
     nativeOnly: {
+        onPhotoViewerError: true,
         onPhotoViewerLoadStart: true,
         onPhotoViewerLoad: true,
         onPhotoViewerLoadEnd: true,
+        onPhotoViewerProgress: true,
         onPhotoViewerTap: true,
         onPhotoViewerViewTap: true,
         onPhotoViewerScale: true,
@@ -81,4 +90,5 @@ var cfg = {
         loadingIndicatorSrc: true
     }
 };
+
 const RNPhotoView = requireNativeComponent('RNPhotoView', PhotoView, cfg);

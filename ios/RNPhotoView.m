@@ -285,41 +285,62 @@
 #pragma mark - Setter
 
 - (void)setSource:(NSDictionary *)source {
-    if ([_source isEqualToDictionary:source]) {
-        return;
-    }
-    NSString *uri = source[@"uri"];
-    if (!uri) {
-        return;
-    }
-    _source = source;
-    NSURL *imageURL = [NSURL URLWithString:uri];
-    UIImage *image = RCTImageFromLocalAssetURL(imageURL);
-    if (image) { // if local image
-        [self setImage:image];
-        return;
-    }
-    
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:imageURL];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ([_source isEqualToDictionary:source]) {
+            return;
+        }
+        NSString *uri = source[@"uri"];
+        if (!uri) {
+            return;
+        }
+        _source = source;
+        NSURL *imageURL = [NSURL URLWithString:uri];
+        UIImage *image = RCTImageFromLocalAssetURL(imageURL);
+        if (image) { // if local image
+            [self setImage:image];
+            return;
+        }
 
-    __weak RNPhotoView *weakSelf = self;
-    if (_onPhotoViewerLoadStart) {
-        _onPhotoViewerLoadStart(nil);
-    }
-    [_bridge.imageLoader loadImageWithURLRequest:request
-                                        callback:^(NSError *error, UIImage *image) {
-                                            if (image) {
-                                                dispatch_sync(dispatch_get_main_queue(), ^{
-                                                    [weakSelf setImage:image];
-                                                });
-                                                if (_onPhotoViewerLoad) {
-                                                    _onPhotoViewerLoad(nil);
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:imageURL];
+
+        __weak RNPhotoView *weakSelf = self;
+        if (_onPhotoViewerLoadStart) {
+            _onPhotoViewerLoadStart(nil);
+        }
+
+        // use default values from [imageLoader loadImageWithURLRequest:request callback:callback] method
+        [_bridge.imageLoader loadImageWithURLRequest:request
+                                        size:CGSizeZero
+                                       scale:1
+                                     clipped:YES
+                                  resizeMode:RCTResizeModeStretch
+                               progressBlock:^(int64_t progress, int64_t total) {
+                                   if (_onPhotoViewerProgress) {
+                                       _onPhotoViewerProgress(@{
+                                           @"loaded": @((double)progress),
+                                           @"total": @((double)total),
+                                       });
+                                   }
+                               }
+                            partialLoadBlock:nil
+                             completionBlock:^(NSError *error, UIImage *image) {
+                                                if (image) {
+                                                    dispatch_sync(dispatch_get_main_queue(), ^{
+                                                        [weakSelf setImage:image];
+                                                    });
+                                                    if (_onPhotoViewerLoad) {
+                                                        _onPhotoViewerLoad(nil);
+                                                    }
+                                                } else {
+                                                    if (_onPhotoViewerError) {
+                                                        _onPhotoViewerError(nil);
+                                                    }
                                                 }
-                                            }
-                                            if (_onPhotoViewerLoadEnd) {
-                                                _onPhotoViewerLoadEnd(nil);
-                                            }
-                                        }];
+                                                if (_onPhotoViewerLoadEnd) {
+                                                    _onPhotoViewerLoadEnd(nil);
+                                                }
+                                            }];
+    });
 }
 
 - (void)setLoadingIndicatorSrc:(NSString *)loadingIndicatorSrc {
@@ -364,10 +385,10 @@
 
 - (void)initView {
     _minZoomScale = 1.0;
-    _maxZoomScale = 3.0;
+    _maxZoomScale = 5.0;
     
     // Setup
-    self.backgroundColor = [UIColor blackColor];
+    self.backgroundColor = [UIColor whiteColor];
     self.delegate = self;
     self.decelerationRate = UIScrollViewDecelerationRateFast;
     self.showsVerticalScrollIndicator = YES;
@@ -377,12 +398,12 @@
     _tapView = [[MWTapDetectingView alloc] initWithFrame:self.bounds];
     _tapView.tapDelegate = self;
     _tapView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _tapView.backgroundColor = [UIColor blackColor];
+    _tapView.backgroundColor = [UIColor whiteColor];
     [self addSubview:_tapView];
     
     // Image view
     _photoImageView = [[MWTapDetectingImageView alloc] initWithFrame:self.bounds];
-    _photoImageView.backgroundColor = [UIColor blackColor];
+    _photoImageView.backgroundColor = [UIColor whiteColor];
     _photoImageView.contentMode = UIViewContentModeCenter;
     _photoImageView.tapDelegate = self;
     [self addSubview:_photoImageView];
